@@ -44,8 +44,8 @@ $(function() {
 
          it('have names', function() {
             allFeeds.forEach(function(value, index) {
-                expect(allFeeds[index].name).toBeDefined();
-                expect(allFeeds[index].name.length).toBeGreaterThan(1);
+                expect(value.name).toBeDefined();
+                expect(value.name.length).toBeGreaterThan(1);
             });
          });
     });
@@ -76,8 +76,7 @@ $(function() {
     });
 
     describe('Initial entries', function() { 
-        var numEntries = $('.feed').length;
-
+        var numEntries;
         //call loadFeed for first feed. loadFeed has a second paramater for a callback.
         beforeEach(function(done) {
             loadFeed(0, done);
@@ -87,6 +86,7 @@ $(function() {
         * entries appearing.
          */
         it('have at least one entry', function(done) {
+            numEntries = $('.feed').children().length;
             expect(numEntries).toBeGreaterThan(0);
             done();
         });
