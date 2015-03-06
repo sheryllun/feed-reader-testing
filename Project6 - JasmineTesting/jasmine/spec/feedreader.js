@@ -28,13 +28,13 @@ $(function() {
 
 
         /*This test makes sure that each feed in the allFeeds object
-         *has a URL defined, and the URL string must contain 'http://'.
+         *has a URL defined, and the URL string is greater than one letter long.
          */
 
          it('contain a URL', function() {
-            allFeeds.forEach(function(value, index) {
-                expect(allFeeds[index].url).toBeDefined();
-                expect(allFeeds[index].url).toContain('http://');
+            allFeeds.forEach(function(value) {
+                expect(value.url).toBeDefined();
+                expect(value.url.length).toBeGreaterThan(1);
             });
          });
 
@@ -43,7 +43,7 @@ $(function() {
          */
 
          it('have names', function() {
-            allFeeds.forEach(function(value, index) {
+            allFeeds.forEach(function(value) {
                 expect(value.name).toBeDefined();
                 expect(value.name.length).toBeGreaterThan(1);
             });
@@ -86,27 +86,45 @@ $(function() {
         * entries appearing.
          */
         it('have at least one entry', function(done) {
-            numEntries = $('.feed').children().length;
+            numEntries = $('.feed').find('.entry').length;
             expect(numEntries).toBeGreaterThan(0);
             done();
         });
     });
 
     describe('New Feed Selection', function() { 
-        var headlineText;
+        var headlineText, newHeadlineText;
 
         beforeEach(function(done) {
-            //get all the headlines and store them in a variable
-            headlineText = $('.entry').children('h2').text();
-            loadFeed(1, done);
+            spyOn(window, 'loadFeed').and.callThrough();
+            loadFeed(0, done);
         });
-        /* Checks to make sure that when user clicks on a new feed, the new 
-         *feed loads and the entries on the page change to reflect the new feed.
+
+        //test to make sure feed 0 loads when called, store the headlines in a variable
+        it('loads feed 0 when called', function() {
+            expect(window.loadFeed).toHaveBeenCalledWith(0, jasmine.any(Function));
+            //access the headlines in this scope and save them to a top-level variable.
+            this.headlineText = $('.entry').children('h2').text();
+            headlineText = this.headlineText;
+        });
+
+        describe('loads a new feed', function() {
+            beforeEach(function(done) {
+                loadFeed(1, done);
+            });
+
+        //test to make sure feed 1 loads when called, store the headlines in a top-level variable.
+        it('loads feed 1 when called', function() {
+            expect(window.loadFeed).toHaveBeenCalledWith(1, jasmine.any(Function));
+            this.headlineText = $('.entry').children('h2').text();
+            newHeadlineText = this.headlineText;
+        });
+        /* Checks to make sure that headlines from feed 1 are not the same as headlines from feed 0. I.e., 
+         * make sure different feeds were loaded by loadFeed().
          */
-         it('changes when a new feed is loaded', function(done) {
-            var newHeadlineText = $('.entry').children('h2').text();
+         it('Feed headlines should not match', function() {
             expect(newHeadlineText).not.toEqual(headlineText);
-            done();
          });
+        });
     });
 }());
